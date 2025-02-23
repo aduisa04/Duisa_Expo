@@ -28,6 +28,16 @@ const Calculator = () => {
     setInputs(newInputs);
   };
 
+  const handleReset = () => {
+    setInputs([{ num: '' }, { num: '' }]);
+    setResult(null);
+  };
+
+  const handleRemoveInput = (index) => {
+    const newInputs = inputs.filter((_, i) => i !== index);
+    setInputs(newInputs);
+  };
+
   return (
     <View style={styles.calculatorWrapper}>
       <Text style={styles.heading}>Calculator</Text>
@@ -40,26 +50,49 @@ const Calculator = () => {
       </View>
 
       <View style={styles.calculatorContent}>
-        <TouchableOpacity 
-          style={[styles.button, styles.addButton]}
-          onPress={handleAddInput}
-        >
-          <Text style={styles.buttonText}>Add Input</Text>
-        </TouchableOpacity>
-        
+        {/* Add Input and Reset buttons */}
+        <View style={styles.topButtons}>
+          <TouchableOpacity 
+            style={[styles.button, styles.addButton]}
+            onPress={handleAddInput}
+          >
+            <Text style={styles.buttonText}>Add Input</Text>
+          </TouchableOpacity>
+          <TouchableOpacity 
+            style={[styles.button, styles.resetButton]}
+            onPress={handleReset}
+          >
+            <Text style={styles.buttonText}>Reset</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Input Fields */}
         {inputs.map((input, index) => (
-          <TextInput
-            key={index}
-            style={styles.input}
-            keyboardType="numeric"
-            value={input.num}
-            onChangeText={(text) => handleChange(text, index)}
-            placeholder={`Number ${index + 1}`}
-            placeholderTextColor="rgba(255, 255, 255, 0.5)"
-          />
+          <View key={index} style={styles.inputContainer}>
+            <TextInput
+              style={[
+                styles.input,
+                index < 2 ? styles.initialInput : styles.additionalInput
+              ]}
+              keyboardType="numeric"
+              value={input.num}
+              onChangeText={(text) => handleChange(text, index)}
+              placeholder={`Number ${index + 1}`}
+              placeholderTextColor="rgba(255, 255, 255, 0.5)"
+            />
+            {index >= 2 && (
+              <TouchableOpacity 
+                style={styles.removeButton}
+                onPress={() => handleRemoveInput(index)}
+              >
+                <Text style={styles.buttonText}>×</Text>
+              </TouchableOpacity>
+            )}
+          </View>
         ))}
-        
-        <View style={styles.buttonContainer}>
+
+        {/* Operation Buttons */}
+        <View style={styles.operationButtons}>
           <TouchableOpacity 
             style={[styles.button, styles.operatorButton]}
             onPress={() => handleCalculation('+')}
@@ -157,45 +190,68 @@ const styles = StyleSheet.create({
     fontSize: 16,
     backgroundColor: 'rgba(255, 255, 255, 0.05)',
   },
-  buttonContainer: {
+  topButtons: {
+    flexDirection: 'row',
+    justifyContent: 'center',
+    gap: 10,
+    marginBottom: 10,
+    width: '90%',
+  },
+  button: {
+    padding: 10,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  addButton: {
+    backgroundColor: 'rgba(52, 152, 219, 0.8)', // Blue
+    flex: 1,
+  },
+  resetButton: {
+    backgroundColor: 'rgba(231, 76, 60, 0.8)', // Red
+    flex: 1,
+  },
+  removeButton: {
+    backgroundColor: 'rgba(231, 76, 60, 0.8)',
+    width: 40,
+    height: 40,
+    borderRadius: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginLeft: 10,
+  },
+  buttonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: 'bold',
+  },
+  inputContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    width: '90%',
+  },
+  initialInput: {
+    flex: 1,
+  },
+  additionalInput: {
+    flex: 1,
+  },
+  operationButtons: {
     flexDirection: 'row',
     gap: 10,
     justifyContent: 'center',
     width: '100%',
     marginTop: 10,
   },
-  button: {
-    height: 40,
-    minWidth: 40,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.2,
-    shadowRadius: 2,
-    elevation: 3,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.2)',
-  },
-  addButton: {
-    backgroundColor: 'rgba(52, 152, 219, 0.8)', // Blue
-    paddingHorizontal: 15,
-    marginBottom: 10,
-    width: '90%',
-  },
   operatorButton: {
     backgroundColor: 'rgba(46, 204, 113, 0.8)', // Green
     flex: 1,
     maxWidth: 50,
   },
-  buttonText: {
-    color: '#fff',
-    fontSize: 18,
-    fontWeight: 'bold',
-    textShadowColor: 'rgba(0, 0, 0, 0.3)',
-    textShadowOffset: { width: 0, height: 1 },
-    textShadowRadius: 2,
+  container: {
+    maxHeight: '100vh',
+    overflowY: 'auto',
+    WebkitOverflowScrolling: 'touch',
   },
 });
 
